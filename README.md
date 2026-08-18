@@ -41,6 +41,7 @@ Here is a quick look at what the API can do:
 
 ## Environment Variables
 
+* `PORT` : Port for server to listen
 * `MONGO_URI` : Your MongoDB connection string for database access.
 * `JWT_SECRET` : A secure string used to sign and verify session tokens for user authentication.
 * `CLIENT_ID` : Your Gmail OAuth2 Client ID, used by Nodemailer to authenticate and send emails.
