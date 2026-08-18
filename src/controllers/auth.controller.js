@@ -1,13 +1,16 @@
 const userModel = require('../models/user.model')
 const jwt = require('jsonwebtoken')
-const bcrypt = require('bcryptjs')
-
+const sendRegistrationEmail = require('../services/email.service')
+const tokenBlackListModel = require('../models/blackList.model')
 
 async function userRegister(req, res) {
-  const { user_name, email, password } = req.body
+  const { user_name, email, password, systemUser } = req.body
 
   const isExists = await userModel.findOne({
-    email: email
+    $or: [
+      { email: email },
+      { username: user_name }
+    ]
   })
 
   if (isExists) {
@@ -17,10 +20,10 @@ async function userRegister(req, res) {
   }
 
   const user = await userModel.create({
-    email, password, user_name
+    email, password, user_name, systemUser
   })
 
-  const token = jwt.sign({ userID: user._id }, process.env.JWT_SECRET, { expiresIn: '3d' })
+  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '3d' })
 
   res.cookie('token', token)
 
@@ -33,17 +36,16 @@ async function userRegister(req, res) {
     },
     token
   })
+
+  await sendRegistrationEmail.sendRegistrationEmail(user.email, user.user_name)
 }
 
 async function userLogin(req, res) {
-  const { login_id, password } = req.body
+  const { email, password } = req.body
 
-  const user = await userModel.findOne({
-    $or: [
-      { email: login_id },
-      { username: login_id }
-    ]
-  }).select('+password')
+  const user = await userModel.findOne(
+    { email: email },
+  ).select('+password')
 
   if (!user) {
     return res.json({
@@ -58,7 +60,7 @@ async function userLogin(req, res) {
     })
   }
 
-  const token = jwt.sign({ userID: user._id }, process.env.JWT_SECRET, { expiresIn: '3d' })
+  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '3d' })
 
   res.cookie('token', token)
 
@@ -73,4 +75,29 @@ async function userLogin(req, res) {
   })
 }
 
-module.exports = { userRegister, userLogin }
+async function userLogout(req, res) {
+  const token = req.cookies.token || req.headers.authorization?.split(" ")[1]
+
+  if (!token) {
+    return res.status(200).json({
+      message: "User logged out successfully"
+    })
+  }
+
+  await tokenBlackListModel.create({
+    token: token
+  })
+
+  res.clearCookie("token")
+
+  res.status(200).json({
+    message: "User logged out successfully"
+  })
+}
+
+
+module.exports = {
+  userRegister,
+  userLogin,
+  userLogout
+}

@@ -141,3 +141,7 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+docker*
+Notes.txt
+Bank_Ledger_Management.postman_collection.json
