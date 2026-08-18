@@ -50,6 +50,7 @@ Here is a quick look at what the API can do:
 * `EMAIL_USER` : The Gmail address used to authenticate OAuth2 and send system alerts to users.
 * `CIPHER_SECRET_KEY` : A numeric secret key used in the Feistel cipher algorithm to generate secure, unique bank account numbers.
 * `PROCESSING_FEE` : The percentage fee deducted by the system when converting currencies during cross-currency money transfers.
+* `FRONTEND_URLS` : All the allowed URLs to access the system. For multiple address keep the URLs with comma separation and no space after it.
 
 ## How to Run It Locally
 
