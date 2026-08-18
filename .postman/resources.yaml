@@ -1,7 +1,0 @@
-# Use this workspace to collaborate
-workspace:
-  id: 5cd26c29-ce5f-4cff-841c-d62f0a37efe4
-
-localResources:
-  collections:
-    - ../Bank_Ledger_Management.postman_collection.json
